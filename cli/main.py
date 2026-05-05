@@ -35,7 +35,7 @@ console = Console()
 
 app = typer.Typer(
     name="TradingAgents",
-    help="TradingAgents CLI: Multi-Agents LLM Financial Trading Framework",
+    help="TradingAgents CLI — Khung giao dịch tài chính đa tác tử LLM",
     add_completion=True,  # Enable shell completion
 )
 
@@ -170,13 +170,13 @@ class MessageBuffer:
         if latest_section and latest_content:
             # Format the current section for display
             section_titles = {
-                "market_report": "Market Analysis",
-                "sentiment_report": "Social Sentiment",
-                "news_report": "News Analysis",
-                "fundamentals_report": "Fundamentals Analysis",
-                "investment_plan": "Research Team Decision",
-                "trader_investment_plan": "Trading Team Plan",
-                "final_trade_decision": "Portfolio Management Decision",
+                "market_report": "Phân tích thị trường",
+                "sentiment_report": "Cảm xúc xã hội",
+                "news_report": "Phân tích tin tức",
+                "fundamentals_report": "Phân tích cơ bản",
+                "investment_plan": "Quyết định nhóm nghiên cứu",
+                "trader_investment_plan": "Kế hoạch nhóm giao dịch",
+                "final_trade_decision": "Quyết định quản lý danh mục",
             }
             self.current_report = (
                 f"### {section_titles[latest_section]}\n{latest_content}"
@@ -191,37 +191,37 @@ class MessageBuffer:
         # Analyst Team Reports - use .get() to handle missing sections
         analyst_sections = ["market_report", "sentiment_report", "news_report", "fundamentals_report"]
         if any(self.report_sections.get(section) for section in analyst_sections):
-            report_parts.append("## Analyst Team Reports")
+            report_parts.append("## Báo cáo nhóm phân tích")
             if self.report_sections.get("market_report"):
                 report_parts.append(
-                    f"### Market Analysis\n{self.report_sections['market_report']}"
+                    f"### Phân tích thị trường\n{self.report_sections['market_report']}"
                 )
             if self.report_sections.get("sentiment_report"):
                 report_parts.append(
-                    f"### Social Sentiment\n{self.report_sections['sentiment_report']}"
+                    f"### Cảm xúc xã hội\n{self.report_sections['sentiment_report']}"
                 )
             if self.report_sections.get("news_report"):
                 report_parts.append(
-                    f"### News Analysis\n{self.report_sections['news_report']}"
+                    f"### Phân tích tin tức\n{self.report_sections['news_report']}"
                 )
             if self.report_sections.get("fundamentals_report"):
                 report_parts.append(
-                    f"### Fundamentals Analysis\n{self.report_sections['fundamentals_report']}"
+                    f"### Phân tích cơ bản\n{self.report_sections['fundamentals_report']}"
                 )
 
         # Research Team Reports
         if self.report_sections.get("investment_plan"):
-            report_parts.append("## Research Team Decision")
+            report_parts.append("## Quyết định nhóm nghiên cứu")
             report_parts.append(f"{self.report_sections['investment_plan']}")
 
         # Trading Team Reports
         if self.report_sections.get("trader_investment_plan"):
-            report_parts.append("## Trading Team Plan")
+            report_parts.append("## Kế hoạch nhóm giao dịch")
             report_parts.append(f"{self.report_sections['trader_investment_plan']}")
 
         # Portfolio Management Decision
         if self.report_sections.get("final_trade_decision"):
-            report_parts.append("## Portfolio Management Decision")
+            report_parts.append("## Quyết định quản lý danh mục")
             report_parts.append(f"{self.report_sections['final_trade_decision']}")
 
         self.final_report = "\n\n".join(report_parts) if report_parts else None
@@ -257,9 +257,9 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
     # Header with welcome message
     layout["header"].update(
         Panel(
-            "[bold green]Welcome to TradingAgents CLI[/bold green]\n"
-            "[dim]© [Tauric Research](https://github.com/TauricResearch)[/dim]",
-            title="Welcome to TradingAgents",
+            "[bold green]Chào mừng đến TradingAgents CLI[/bold green]\n"
+            "[dim]Nguồn: [TradingAgentsVN](https://github.com/drminh2807/TradingAgentsVN)[/dim]",
+            title="TradingAgents",
             border_style="green",
             padding=(1, 2),
             expand=True,
@@ -276,22 +276,22 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
         padding=(0, 2),  # Add horizontal padding
         expand=True,  # Make table expand to fill available space
     )
-    progress_table.add_column("Team", style="cyan", justify="center", width=20)
-    progress_table.add_column("Agent", style="green", justify="center", width=20)
-    progress_table.add_column("Status", style="yellow", justify="center", width=20)
+    progress_table.add_column("Nhóm", style="cyan", justify="center", width=20)
+    progress_table.add_column("Tác tử", style="green", justify="center", width=20)
+    progress_table.add_column("Trạng thái", style="yellow", justify="center", width=20)
 
     # Group agents by team - filter to only include agents in agent_status
     all_teams = {
-        "Analyst Team": [
+        "Nhóm phân tích": [
             "Market Analyst",
             "Social Analyst",
             "News Analyst",
             "Fundamentals Analyst",
         ],
-        "Research Team": ["Bull Researcher", "Bear Researcher", "Research Manager"],
-        "Trading Team": ["Trader"],
-        "Risk Management": ["Aggressive Analyst", "Neutral Analyst", "Conservative Analyst"],
-        "Portfolio Management": ["Portfolio Manager"],
+        "Nhóm nghiên cứu": ["Bull Researcher", "Bear Researcher", "Research Manager"],
+        "Nhóm giao dịch": ["Trader"],
+        "Quản trị rủi ro": ["Aggressive Analyst", "Neutral Analyst", "Conservative Analyst"],
+        "Quản lý danh mục": ["Portfolio Manager"],
     }
 
     # Filter teams to only include agents that are in agent_status
@@ -307,7 +307,7 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
         status = message_buffer.agent_status.get(first_agent, "pending")
         if status == "in_progress":
             spinner = Spinner(
-                "dots", text="[blue]in_progress[/blue]", style="bold cyan"
+                "dots", text="[blue]đang chạy[/blue]", style="bold cyan"
             )
             status_cell = spinner
         else:
@@ -316,7 +316,12 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
                 "completed": "green",
                 "error": "red",
             }.get(status, "white")
-            status_cell = f"[{status_color}]{status}[/{status_color}]"
+            status_label = {
+                "pending": "chờ",
+                "completed": "xong",
+                "error": "lỗi",
+            }.get(status, status)
+            status_cell = f"[{status_color}]{status_label}[/{status_color}]"
         progress_table.add_row(team, first_agent, status_cell)
 
         # Add remaining agents in team
@@ -324,7 +329,7 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
             status = message_buffer.agent_status.get(agent, "pending")
             if status == "in_progress":
                 spinner = Spinner(
-                    "dots", text="[blue]in_progress[/blue]", style="bold cyan"
+                    "dots", text="[blue]đang chạy[/blue]", style="bold cyan"
                 )
                 status_cell = spinner
             else:
@@ -333,14 +338,19 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
                     "completed": "green",
                     "error": "red",
                 }.get(status, "white")
-                status_cell = f"[{status_color}]{status}[/{status_color}]"
+                status_label = {
+                    "pending": "chờ",
+                    "completed": "xong",
+                    "error": "lỗi",
+                }.get(status, status)
+                status_cell = f"[{status_color}]{status_label}[/{status_color}]"
             progress_table.add_row("", agent, status_cell)
 
         # Add horizontal line after each team
         progress_table.add_row("─" * 20, "─" * 20, "─" * 20, style="dim")
 
     layout["progress"].update(
-        Panel(progress_table, title="Progress", border_style="cyan", padding=(1, 2))
+        Panel(progress_table, title="Tiến độ", border_style="cyan", padding=(1, 2))
     )
 
     # Messages panel showing recent messages and tool calls
@@ -353,10 +363,10 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
         show_lines=True,  # Keep horizontal lines
         padding=(0, 1),  # Add some padding between columns
     )
-    messages_table.add_column("Time", style="cyan", width=8, justify="center")
-    messages_table.add_column("Type", style="green", width=10, justify="center")
+    messages_table.add_column("Giờ", style="cyan", width=8, justify="center")
+    messages_table.add_column("Loại", style="green", width=10, justify="center")
     messages_table.add_column(
-        "Content", style="white", no_wrap=False, ratio=1
+        "Nội dung", style="white", no_wrap=False, ratio=1
     )  # Make content column expand
 
     # Combine tool calls and messages
@@ -392,7 +402,7 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
     layout["messages"].update(
         Panel(
             messages_table,
-            title="Messages & Tools",
+            title="Tin nhắn & công cụ",
             border_style="blue",
             padding=(1, 2),
         )
@@ -403,7 +413,7 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
         layout["analysis"].update(
             Panel(
                 Markdown(message_buffer.current_report),
-                title="Current Report",
+                title="Báo cáo hiện tại",
                 border_style="green",
                 padding=(1, 2),
             )
@@ -411,8 +421,8 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
     else:
         layout["analysis"].update(
             Panel(
-                "[italic]Waiting for analysis report...[/italic]",
-                title="Current Report",
+                "[italic]Đang chờ báo cáo phân tích...[/italic]",
+                title="Báo cáo hiện tại",
                 border_style="green",
                 padding=(1, 2),
             )
@@ -430,22 +440,22 @@ def update_display(layout, spinner_text=None, stats_handler=None, start_time=Non
     reports_total = len(message_buffer.report_sections)
 
     # Build stats parts
-    stats_parts = [f"Agents: {agents_completed}/{agents_total}"]
+    stats_parts = [f"Tác tử: {agents_completed}/{agents_total}"]
 
     # LLM and tool stats from callback handler
     if stats_handler:
         stats = stats_handler.get_stats()
         stats_parts.append(f"LLM: {stats['llm_calls']}")
-        stats_parts.append(f"Tools: {stats['tool_calls']}")
+        stats_parts.append(f"Công cụ: {stats['tool_calls']}")
 
         # Token display with graceful fallback
         if stats["tokens_in"] > 0 or stats["tokens_out"] > 0:
-            tokens_str = f"Tokens: {format_tokens(stats['tokens_in'])}\u2191 {format_tokens(stats['tokens_out'])}\u2193"
+            tokens_str = f"Token: {format_tokens(stats['tokens_in'])}\u2191 {format_tokens(stats['tokens_out'])}\u2193"
         else:
-            tokens_str = "Tokens: --"
+            tokens_str = "Token: --"
         stats_parts.append(tokens_str)
 
-    stats_parts.append(f"Reports: {reports_completed}/{reports_total}")
+    stats_parts.append(f"Báo cáo: {reports_completed}/{reports_total}")
 
     # Elapsed time
     if start_time:
@@ -468,11 +478,11 @@ def get_user_selections():
 
     # Create welcome box content
     welcome_content = f"{welcome_ascii}\n"
-    welcome_content += "[bold green]TradingAgents: Multi-Agents LLM Financial Trading Framework - CLI[/bold green]\n\n"
-    welcome_content += "[bold]Workflow Steps:[/bold]\n"
-    welcome_content += "I. Analyst Team → II. Research Team → III. Trader → IV. Risk Management → V. Portfolio Management\n\n"
+    welcome_content += "[bold green]TradingAgents — CLI khung giao dịch tài chính đa tác tử LLM[/bold green]\n\n"
+    welcome_content += "[bold]Luồng làm việc:[/bold]\n"
+    welcome_content += "I. Nhóm phân tích → II. Nhóm nghiên cứu → III. Trader → IV. Quản trị rủi ro → V. Quản lý danh mục\n\n"
     welcome_content += (
-        "[dim]Built by [Tauric Research](https://github.com/TauricResearch)[/dim]"
+        "[dim]Mã nguồn: [TradingAgentsVN](https://github.com/drminh2807/TradingAgentsVN)[/dim]"
     )
 
     # Create and center the welcome box
@@ -480,8 +490,8 @@ def get_user_selections():
         welcome_content,
         border_style="green",
         padding=(1, 2),
-        title="Welcome to TradingAgents",
-        subtitle="Multi-Agents LLM Financial Trading Framework",
+        title="Chào mừng đến TradingAgents",
+        subtitle="Khung đa tác tử LLM cho phân tích tài chính",
     )
     console.print(Align.center(welcome_box))
     console.print()
@@ -496,14 +506,14 @@ def get_user_selections():
         box_content = f"[bold]{title}[/bold]\n"
         box_content += f"[dim]{prompt}[/dim]"
         if default:
-            box_content += f"\n[dim]Default: {default}[/dim]"
+            box_content += f"\n[dim]Mặc định: {default}[/dim]"
         return Panel(box_content, border_style="blue", padding=(1, 2))
 
     # Step 1: Ticker symbol
     console.print(
         create_question_box(
-            "Step 1: Ticker Symbol",
-            "Enter the exact ticker symbol to analyze, including exchange suffix when needed (examples: SPY, CNC.TO, 7203.T, 0700.HK)",
+            "Bước 1: Mã chứng khoán",
+            "Nhập chính xác mã cần phân tích, kèm hậu tố sàn nếu có (ví dụ: SPY, VHM.VN, CNC.TO, 7203.T, 0700.HK)",
             "SPY",
         )
     )
@@ -513,8 +523,8 @@ def get_user_selections():
     default_date = datetime.datetime.now().strftime("%Y-%m-%d")
     console.print(
         create_question_box(
-            "Step 2: Analysis Date",
-            "Enter the analysis date (YYYY-MM-DD)",
+            "Bước 2: Ngày phân tích",
+            "Nhập ngày theo định dạng YYYY-MM-DD",
             default_date,
         )
     )
@@ -523,8 +533,8 @@ def get_user_selections():
     # Step 3: Output language
     console.print(
         create_question_box(
-            "Step 3: Output Language",
-            "Select the language for analyst reports and final decision"
+            "Bước 3: Ngôn ngữ báo cáo",
+            "Chọn ngôn ngữ cho báo cáo phân tích và quyết định cuối"
         )
     )
     output_language = ask_output_language()
@@ -532,18 +542,20 @@ def get_user_selections():
     # Step 4: Select analysts
     console.print(
         create_question_box(
-            "Step 4: Analysts Team", "Select your LLM analyst agents for the analysis"
+            "Bước 4: Nhóm phân tích",
+            "Chọn các tác tử phân tích LLM cho lần chạy này"
         )
     )
     selected_analysts = select_analysts()
     console.print(
-        f"[green]Selected analysts:[/green] {', '.join(analyst.value for analyst in selected_analysts)}"
+        f"[green]Đã chọn:[/green] {', '.join(analyst.value for analyst in selected_analysts)}"
     )
 
     # Step 5: Research depth
     console.print(
         create_question_box(
-            "Step 5: Research Depth", "Select your research depth level"
+            "Bước 5: Độ sâu nghiên cứu",
+            "Chọn mức độ tranh luận và thảo luận chiến lược"
         )
     )
     selected_research_depth = select_research_depth()
@@ -551,7 +563,8 @@ def get_user_selections():
     # Step 6: LLM Provider
     console.print(
         create_question_box(
-            "Step 6: LLM Provider", "Select your LLM provider"
+            "Bước 6: Nhà cung cấp LLM",
+            "Chọn API / nhà cung cấp mô hình"
         )
     )
     selected_llm_provider, backend_url = select_llm_provider()
@@ -559,7 +572,8 @@ def get_user_selections():
     # Step 7: Thinking agents
     console.print(
         create_question_box(
-            "Step 7: Thinking Agents", "Select your thinking agents for analysis"
+            "Bước 7: Mô hình suy nghĩ",
+            "Chọn mô hình suy nghĩ nhanh và sâu"
         )
     )
     selected_shallow_thinker = select_shallow_thinking_agent(selected_llm_provider)
@@ -574,24 +588,24 @@ def get_user_selections():
     if provider_lower == "google":
         console.print(
             create_question_box(
-                "Step 8: Thinking Mode",
-                "Configure Gemini thinking mode"
+                "Bước 8: Chế độ Thinking (Gemini)",
+                "Cấu hình thinking cho Gemini"
             )
         )
         thinking_level = ask_gemini_thinking_config()
     elif provider_lower == "openai":
         console.print(
             create_question_box(
-                "Step 8: Reasoning Effort",
-                "Configure OpenAI reasoning effort level"
+                "Bước 8: Reasoning effort (OpenAI)",
+                "Cấu hình mức reasoning"
             )
         )
         reasoning_effort = ask_openai_reasoning_effort()
     elif provider_lower == "anthropic":
         console.print(
             create_question_box(
-                "Step 8: Effort Level",
-                "Configure Claude effort level"
+                "Bước 8: Effort (Anthropic)",
+                "Cấu hình effort cho Claude"
             )
         )
         anthropic_effort = ask_anthropic_effort()
@@ -627,12 +641,12 @@ def get_analysis_date():
             # Validate date format and ensure it's not in the future
             analysis_date = datetime.datetime.strptime(date_str, "%Y-%m-%d")
             if analysis_date.date() > datetime.datetime.now().date():
-                console.print("[red]Error: Analysis date cannot be in the future[/red]")
+                console.print("[red]Lỗi: Ngày phân tích không được là tương lai[/red]")
                 continue
             return date_str
         except ValueError:
             console.print(
-                "[red]Error: Invalid date format. Please use YYYY-MM-DD[/red]"
+                "[red]Lỗi: Định dạng ngày không hợp lệ. Dùng YYYY-MM-DD[/red]"
             )
 
 
@@ -662,7 +676,7 @@ def save_report_to_disk(final_state, ticker: str, save_path: Path):
         analyst_parts.append(("Fundamentals Analyst", final_state["fundamentals_report"]))
     if analyst_parts:
         content = "\n\n".join(f"### {name}\n{text}" for name, text in analyst_parts)
-        sections.append(f"## I. Analyst Team Reports\n\n{content}")
+        sections.append(f"## I. Báo cáo nhóm phân tích\n\n{content}")
 
     # 2. Research
     if final_state.get("investment_debate_state"):
@@ -683,14 +697,14 @@ def save_report_to_disk(final_state, ticker: str, save_path: Path):
             research_parts.append(("Research Manager", debate["judge_decision"]))
         if research_parts:
             content = "\n\n".join(f"### {name}\n{text}" for name, text in research_parts)
-            sections.append(f"## II. Research Team Decision\n\n{content}")
+            sections.append(f"## II. Quyết định nhóm nghiên cứu\n\n{content}")
 
     # 3. Trading
     if final_state.get("trader_investment_plan"):
         trading_dir = save_path / "3_trading"
         trading_dir.mkdir(exist_ok=True)
         (trading_dir / "trader.md").write_text(final_state["trader_investment_plan"], encoding="utf-8")
-        sections.append(f"## III. Trading Team Plan\n\n### Trader\n{final_state['trader_investment_plan']}")
+        sections.append(f"## III. Kế hoạch nhóm giao dịch\n\n### Trader\n{final_state['trader_investment_plan']}")
 
     # 4. Risk Management
     if final_state.get("risk_debate_state"):
@@ -711,17 +725,17 @@ def save_report_to_disk(final_state, ticker: str, save_path: Path):
             risk_parts.append(("Neutral Analyst", risk["neutral_history"]))
         if risk_parts:
             content = "\n\n".join(f"### {name}\n{text}" for name, text in risk_parts)
-            sections.append(f"## IV. Risk Management Team Decision\n\n{content}")
+            sections.append(f"## IV. Quyết định quản trị rủi ro\n\n{content}")
 
         # 5. Portfolio Manager
         if risk.get("judge_decision"):
             portfolio_dir = save_path / "5_portfolio"
             portfolio_dir.mkdir(exist_ok=True)
             (portfolio_dir / "decision.md").write_text(risk["judge_decision"], encoding="utf-8")
-            sections.append(f"## V. Portfolio Manager Decision\n\n### Portfolio Manager\n{risk['judge_decision']}")
+            sections.append(f"## V. Quyết định quản lý danh mục\n\n### Portfolio Manager\n{risk['judge_decision']}")
 
     # Write consolidated report
-    header = f"# Trading Analysis Report: {ticker}\n\nGenerated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+    header = f"# Báo cáo phân tích: {ticker}\n\nTạo lúc: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
     (save_path / "complete_report.md").write_text(header + "\n\n".join(sections), encoding="utf-8")
     return save_path / "complete_report.md"
 
@@ -729,7 +743,7 @@ def save_report_to_disk(final_state, ticker: str, save_path: Path):
 def display_complete_report(final_state):
     """Display the complete analysis report sequentially (avoids truncation)."""
     console.print()
-    console.print(Rule("Complete Analysis Report", style="bold green"))
+    console.print(Rule("Báo cáo phân tích đầy đủ", style="bold green"))
 
     # I. Analyst Team Reports
     analysts = []
@@ -742,7 +756,7 @@ def display_complete_report(final_state):
     if final_state.get("fundamentals_report"):
         analysts.append(("Fundamentals Analyst", final_state["fundamentals_report"]))
     if analysts:
-        console.print(Panel("[bold]I. Analyst Team Reports[/bold]", border_style="cyan"))
+        console.print(Panel("[bold]I. Báo cáo nhóm phân tích[/bold]", border_style="cyan"))
         for title, content in analysts:
             console.print(Panel(Markdown(content), title=title, border_style="blue", padding=(1, 2)))
 
@@ -757,14 +771,14 @@ def display_complete_report(final_state):
         if debate.get("judge_decision"):
             research.append(("Research Manager", debate["judge_decision"]))
         if research:
-            console.print(Panel("[bold]II. Research Team Decision[/bold]", border_style="magenta"))
+            console.print(Panel("[bold]II. Quyết định nhóm nghiên cứu[/bold]", border_style="magenta"))
             for title, content in research:
                 console.print(Panel(Markdown(content), title=title, border_style="blue", padding=(1, 2)))
 
     # III. Trading Team
     if final_state.get("trader_investment_plan"):
-        console.print(Panel("[bold]III. Trading Team Plan[/bold]", border_style="yellow"))
-        console.print(Panel(Markdown(final_state["trader_investment_plan"]), title="Trader", border_style="blue", padding=(1, 2)))
+        console.print(Panel("[bold]III. Kế hoạch nhóm giao dịch[/bold]", border_style="yellow"))
+        console.print(Panel(Markdown(final_state["trader_investment_plan"]), title="Nhà giao dịch", border_style="blue", padding=(1, 2)))
 
     # IV. Risk Management Team
     if final_state.get("risk_debate_state"):
@@ -777,14 +791,14 @@ def display_complete_report(final_state):
         if risk.get("neutral_history"):
             risk_reports.append(("Neutral Analyst", risk["neutral_history"]))
         if risk_reports:
-            console.print(Panel("[bold]IV. Risk Management Team Decision[/bold]", border_style="red"))
+            console.print(Panel("[bold]IV. Quyết định quản trị rủi ro[/bold]", border_style="red"))
             for title, content in risk_reports:
                 console.print(Panel(Markdown(content), title=title, border_style="blue", padding=(1, 2)))
 
         # V. Portfolio Manager Decision
         if risk.get("judge_decision"):
-            console.print(Panel("[bold]V. Portfolio Manager Decision[/bold]", border_style="green"))
-            console.print(Panel(Markdown(risk["judge_decision"]), title="Portfolio Manager", border_style="blue", padding=(1, 2)))
+            console.print(Panel("[bold]V. Quyết định quản lý danh mục[/bold]", border_style="green"))
+            console.print(Panel(Markdown(risk["judge_decision"]), title="Quản lý danh mục", border_style="blue", padding=(1, 2)))
 
 
 def update_research_team_status(status):
@@ -942,7 +956,7 @@ def run_analysis(checkpoint: bool = False):
     config["google_thinking_level"] = selections.get("google_thinking_level")
     config["openai_reasoning_effort"] = selections.get("openai_reasoning_effort")
     config["anthropic_effort"] = selections.get("anthropic_effort")
-    config["output_language"] = selections.get("output_language", "English")
+    config["output_language"] = selections.get("output_language", "Vietnamese")
     config["checkpoint_enabled"] = checkpoint
 
     # Create stats callback handler for tracking LLM/tool calls
@@ -1022,13 +1036,13 @@ def run_analysis(checkpoint: bool = False):
         update_display(layout, stats_handler=stats_handler, start_time=start_time)
 
         # Add initial messages
-        message_buffer.add_message("System", f"Selected ticker: {selections['ticker']}")
+        message_buffer.add_message("System", f"Mã đã chọn: {selections['ticker']}")
         message_buffer.add_message(
-            "System", f"Analysis date: {selections['analysis_date']}"
+            "System", f"Ngày phân tích: {selections['analysis_date']}"
         )
         message_buffer.add_message(
             "System",
-            f"Selected analysts: {', '.join(analyst.value for analyst in selections['analysts'])}",
+            f"Nhóm phân tích: {', '.join(analyst.value for analyst in selections['analysts'])}",
         )
         update_display(layout, stats_handler=stats_handler, start_time=start_time)
 
@@ -1039,7 +1053,7 @@ def run_analysis(checkpoint: bool = False):
 
         # Create spinner text
         spinner_text = (
-            f"Analyzing {selections['ticker']} on {selections['analysis_date']}..."
+            f"Đang phân tích {selections['ticker']} ngày {selections['analysis_date']}..."
         )
         update_display(layout, spinner_text, stats_handler=stats_handler, start_time=start_time)
 
@@ -1161,7 +1175,7 @@ def run_analysis(checkpoint: bool = False):
             message_buffer.update_agent_status(agent, "completed")
 
         message_buffer.add_message(
-            "System", f"Completed analysis for {selections['analysis_date']}"
+            "System", f"Hoàn tất phân tích cho {selections['analysis_date']}"
         )
 
         # Update final report sections
@@ -1172,27 +1186,27 @@ def run_analysis(checkpoint: bool = False):
         update_display(layout, stats_handler=stats_handler, start_time=start_time)
 
     # Post-analysis prompts (outside Live context for clean interaction)
-    console.print("\n[bold cyan]Analysis Complete![/bold cyan]\n")
+    console.print("\n[bold cyan]Phân tích hoàn tất![/bold cyan]\n")
 
     # Prompt to save report
-    save_choice = typer.prompt("Save report?", default="Y").strip().upper()
+    save_choice = typer.prompt("Lưu báo cáo?", default="Y").strip().upper()
     if save_choice in ("Y", "YES", ""):
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         default_path = Path.cwd() / "reports" / f"{selections['ticker']}_{timestamp}"
         save_path_str = typer.prompt(
-            "Save path (press Enter for default)",
+            "Đường dẫn lưu (Enter = mặc định)",
             default=str(default_path)
         ).strip()
         save_path = Path(save_path_str)
         try:
             report_file = save_report_to_disk(final_state, selections["ticker"], save_path)
-            console.print(f"\n[green]✓ Report saved to:[/green] {save_path.resolve()}")
-            console.print(f"  [dim]Complete report:[/dim] {report_file.name}")
+            console.print(f"\n[green]✓ Đã lưu báo cáo tại:[/green] {save_path.resolve()}")
+            console.print(f"  [dim]File tổng hợp:[/dim] {report_file.name}")
         except Exception as e:
-            console.print(f"[red]Error saving report: {e}[/red]")
+            console.print(f"[red]Lỗi khi lưu báo cáo: {e}[/red]")
 
     # Prompt to display full report
-    display_choice = typer.prompt("\nDisplay full report on screen?", default="Y").strip().upper()
+    display_choice = typer.prompt("\nHiển thị toàn bộ báo cáo trên màn hình?", default="Y").strip().upper()
     if display_choice in ("Y", "YES", ""):
         display_complete_report(final_state)
 
@@ -1202,18 +1216,18 @@ def analyze(
     checkpoint: bool = typer.Option(
         False,
         "--checkpoint",
-        help="Enable checkpoint/resume: save state after each node so a crashed run can resume.",
+        help="Bật checkpoint/tiếp tục: lưu trạng thái sau mỗi bước để khôi phục khi lỗi.",
     ),
     clear_checkpoints: bool = typer.Option(
         False,
         "--clear-checkpoints",
-        help="Delete all saved checkpoints before running (force fresh start).",
+        help="Xóa toàn bộ checkpoint đã lưu trước khi chạy (chạy mới hoàn toàn).",
     ),
 ):
     if clear_checkpoints:
         from tradingagents.graph.checkpointer import clear_all_checkpoints
         n = clear_all_checkpoints(DEFAULT_CONFIG["data_cache_dir"])
-        console.print(f"[yellow]Cleared {n} checkpoint(s).[/yellow]")
+        console.print(f"[yellow]Đã xóa {n} checkpoint.[/yellow]")
     run_analysis(checkpoint=checkpoint)
 
 
