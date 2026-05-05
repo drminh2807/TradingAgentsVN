@@ -5,6 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from .stockstats_utils import yf_retry
+from .vnstock_news_fetch import get_vnstock_news_section
 
 
 def _extract_article_data(article: dict) -> dict:
@@ -48,30 +49,22 @@ def _extract_article_data(article: dict) -> dict:
         }
 
 
-def get_news_yfinance(
+def _fetch_yahoo_finance_news_body(
     ticker: str,
     start_date: str,
     end_date: str,
 ) -> str:
     """
-    Retrieve news for a specific stock ticker using yfinance.
-
-    Args:
-        ticker: Stock ticker symbol (e.g., "AAPL")
-        start_date: Start date in yyyy-mm-dd format
-        end_date: End date in yyyy-mm-dd format
-
-    Returns:
-        Formatted string containing news articles
+    Returns filtered Yahoo Finance article text, or empty string if none in range,
+    or a line starting with 'Error' on failure.
     """
     try:
         stock = yf.Ticker(ticker)
         news = yf_retry(lambda: stock.get_news(count=20))
 
         if not news:
-            return f"No news found for {ticker}"
+            return ""
 
-        # Parse date range for filtering
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         end_dt = datetime.strptime(end_date, "%Y-%m-%d")
 
@@ -81,7 +74,6 @@ def get_news_yfinance(
         for article in news:
             data = _extract_article_data(article)
 
-            # Filter by date if publish time is available
             if data["pub_date"]:
                 pub_date_naive = data["pub_date"].replace(tzinfo=None)
                 if not (start_dt <= pub_date_naive <= end_dt + relativedelta(days=1)):
@@ -96,12 +88,70 @@ def get_news_yfinance(
             filtered_count += 1
 
         if filtered_count == 0:
-            return f"No news found for {ticker} between {start_date} and {end_date}"
+            return ""
 
-        return f"## {ticker} News, from {start_date} to {end_date}:\n\n{news_str}"
+        return news_str
 
     except Exception as e:
-        return f"Error fetching news for {ticker}: {str(e)}"
+        return f"Error fetching Yahoo Finance news: {e}"
+
+
+def get_news_yfinance(
+    ticker: str,
+    start_date: str,
+    end_date: str,
+) -> str:
+    """
+    Retrieve news for a specific stock ticker using yfinance.
+    For tickers ending in .VN, also appends Vietnamese RSS headlines via vnstock_news
+    (optional install) mentioning the symbol.
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "AAPL", "VHM.VN")
+        start_date: Start date in yyyy-mm-dd format
+        end_date: End date in yyyy-mm-dd format
+
+    Returns:
+        Formatted string containing news articles
+    """
+    ticker = ticker.strip()
+    header = f"## {ticker} News, from {start_date} to {end_date}:\n\n"
+
+    yahoo_body = _fetch_yahoo_finance_news_body(ticker, start_date, end_date)
+
+    if yahoo_body.startswith("Error"):
+        yahoo_block = yahoo_body + "\n"
+    elif yahoo_body:
+        yahoo_block = yahoo_body
+    else:
+        yahoo_block = (
+            f"No Yahoo Finance articles for {ticker} between {start_date} and {end_date} "
+            "(or none with publish dates in range).\n"
+        )
+
+    parts = [
+        header,
+        "### Yahoo Finance\n",
+        yahoo_block,
+        "\n",
+    ]
+
+    if ticker.upper().endswith(".VN"):
+        symbol_base = ticker.upper().removesuffix(".VN").strip()
+        vn_body = (
+            get_vnstock_news_section(symbol_base, start_date, end_date)
+            if symbol_base
+            else ""
+        )
+        parts.append("### Vietnamese media (vnstock_news)\n")
+        if vn_body:
+            parts.append(vn_body)
+        else:
+            parts.append(
+                "No matching Vietnamese RSS articles in this range, or feeds returned no data.\n"
+            )
+
+    return "".join(parts)
 
 
 def get_global_news_yfinance(
